@@ -101,7 +101,9 @@
     <Compile Include="Assets\Script\IMessage.cs" />
     <Compile Include="Assets\Script\IView.cs" />
     <Compile Include="Assets\Script\Main.cs" />
+    <Compile Include="Assets\Script\MessagePkg.cs" />
     <Compile Include="Assets\Script\ResourceManager.cs" />
+    <Compile Include="Assets\Script\Session.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Art\Font\RoleFight.fnt" />

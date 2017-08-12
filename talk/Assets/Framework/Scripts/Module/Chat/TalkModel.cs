@@ -8,15 +8,20 @@ using UnityEngine;
  * */
 
 
-public class TalkModel : MonoBehaviour {
+public class TalkModel {
+    private static TalkModel _instance;
+    public static TalkModel Instance
+    {
+        get
+        {
+            if (_instance == null) _instance = new TalkModel();
+            return _instance;
+        }
+    }
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void Init()
+    {
+
+
+    }
 }
