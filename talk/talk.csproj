@@ -82,8 +82,21 @@
     <Reference Include="UnityEditor.iOS.Extensions.Common">
       <HintPath>Library\UnityAssemblies\UnityEditor.iOS.Extensions.Common.dll</HintPath>
     </Reference>
+    <Reference Include="DOTween">
+      <HintPath>Assets\DOTween\DOTween.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\DOTween Examples\Basics.cs" />
+    <Compile Include="Assets\DOTween Examples\CustomPlugin Example\CustomPluginExampleBrain.cs" />
+    <Compile Include="Assets\DOTween Examples\CustomPlugin Example\CustomRange.cs" />
+    <Compile Include="Assets\DOTween Examples\CustomPlugin Example\CustomRangePlugin.cs" />
+    <Compile Include="Assets\DOTween Examples\Example Assets\DragTarget.cs" />
+    <Compile Include="Assets\DOTween Examples\Follow.cs" />
+    <Compile Include="Assets\DOTween Examples\Materials.cs" />
+    <Compile Include="Assets\DOTween Examples\Paths.cs" />
+    <Compile Include="Assets\DOTween Examples\Sequences.cs" />
+    <Compile Include="Assets\DOTween Examples\UGUI.cs" />
     <Compile Include="Assets\Framework\Scripts\Module\Chat\ChatItemMessage.cs" />
     <Compile Include="Assets\Framework\Scripts\Module\Chat\InlineText.cs" />
     <Compile Include="Assets\Framework\Scripts\Module\Chat\RecordChatItem.cs" />
@@ -108,6 +121,9 @@
   <ItemGroup>
     <None Include="Assets\Art\Font\RoleFight.fnt" />
     <None Include="Assets\Art\Font\fightFont.fnt" />
+    <None Include="Assets\DOTween\DOTween.XML" />
+    <None Include="Assets\DOTween\Editor\DOTweenEditor.XML" />
+    <None Include="Assets\DOTween\readme.txt" />
     <None Include="Assets\Resources\Textures\Chat\emoji\UI-EmojiFont.shader" />
     <None Include="Assets\Resources\Textures\Chat\emoji\emoji.txt" />
   </ItemGroup>
