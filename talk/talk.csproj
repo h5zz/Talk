@@ -98,6 +98,7 @@
     <Compile Include="Assets\DOTween Examples\Sequences.cs" />
     <Compile Include="Assets\DOTween Examples\UGUI.cs" />
     <Compile Include="Assets\Framework\Scripts\Module\Chat\ChatItemMessage.cs" />
+    <Compile Include="Assets\Framework\Scripts\Module\Chat\ChatPanel.cs" />
     <Compile Include="Assets\Framework\Scripts\Module\Chat\InlineText.cs" />
     <Compile Include="Assets\Framework\Scripts\Module\Chat\RecordChatItem.cs" />
     <Compile Include="Assets\Framework\Scripts\Module\Chat\TalkCtrl.cs" />
@@ -117,6 +118,10 @@
     <Compile Include="Assets\Script\MessagePkg.cs" />
     <Compile Include="Assets\Script\ResourceManager.cs" />
     <Compile Include="Assets\Script\Session.cs" />
+    <Compile Include="Assets\TextAction\CoroutineTween.cs" />
+    <Compile Include="Assets\TextAction\Link.cs" />
+    <Compile Include="Assets\TextAction\TextButton.cs" />
+    <Compile Include="Assets\TextAction\TextWithEvents.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Art\Font\RoleFight.fnt" />
@@ -124,6 +129,7 @@
     <None Include="Assets\DOTween\DOTween.XML" />
     <None Include="Assets\DOTween\Editor\DOTweenEditor.XML" />
     <None Include="Assets\DOTween\readme.txt" />
+    <None Include="Assets\Emoji\Output\emoji.txt" />
     <None Include="Assets\Resources\Textures\Chat\emoji\UI-EmojiFont.shader" />
     <None Include="Assets\Resources\Textures\Chat\emoji\emoji.txt" />
   </ItemGroup>

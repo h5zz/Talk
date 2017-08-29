@@ -28,7 +28,7 @@ public class AppStartUpCommand : AppCommand {
     /// </summary>
     public void StartUp()
     {
-        //Debug.Log("启动游戏");
+        Debug.Log("启动游戏");
         AddManager<GameManager>("GameManager");
     }
 }

@@ -19,7 +19,13 @@ public class TalkPanel : MonoBehaviour
     }
     public GameObject ChatPanel()
     {
-        GameObject ChatPanel = Resources.Load("Prefabs/Chat/ChatItem") as GameObject;
-        return ChatPanel;
+        GameObject ChatPanel = Resources.Load("Prefabs/Chat/ChatPanel") as GameObject;
+        GameObject popWin = GameObject.Find("UIRoot/Canvas/PopWindow").gameObject;
+        //Debug.Log(">>>>>" + PopWin);
+        GameObject _chatPanel = Instantiate(ChatPanel);
+        _chatPanel.transform.SetParent(popWin.transform);
+        _chatPanel.transform.localPosition = Vector3.zero;
+        _chatPanel.transform.localScale = Vector3.one;
+        return _chatPanel;
     }
 }
