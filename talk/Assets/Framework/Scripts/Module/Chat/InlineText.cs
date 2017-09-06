@@ -1,44 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.IO;
-using UnityEngine.EventSystems;
-using UnityEngine.Events;
-using System.Text;
+using System.Text.RegularExpressions;
 
-public class InlineText : Text, IPointerClickHandler
+
+public class InlineText : Text
 {
-    public float Twidth = 0f;
-    public float Theight = 0f;
-    public float emojiNum = 0f;
-    private string m_OutputText;
-    private static readonly StringBuilder s_TextBuilder = new StringBuilder();
-    [SerializeField]
-    public class HrefClickEvent : UnityEvent<string> { };
-    [SerializeField]
-    private HrefClickEvent m_OnHrefClick = new HrefClickEvent();
-    public HrefClickEvent onHrefClick
-    {
-        get { return m_OnHrefClick; }
-        set { m_OnHrefClick = value; }
-    }
 
-    private readonly List<HrefInfo> m_HrefInfos = new List<HrefInfo>();
-    private class HrefInfo
-    {
-        public int startIndex;
-        public int endIndex;
-        public string name;
-        public readonly List<Rect> boxes = new List<Rect>();
-    }
-
-    private static readonly Regex s_HrefRegex = new Regex(@"<a ([^>\n\s]+)>(.*?)(</a>)", RegexOptions.Singleline);
     private const bool EMOJI_LARGE = true;
     private static Dictionary<string, EmojiInfo> EmojiIndex = null;
-    private static Dictionary<int, EmojiInfo> emojiDic = new Dictionary<int, EmojiInfo>();
+
     struct EmojiInfo
     {
         public float x;
@@ -47,13 +20,17 @@ public class InlineText : Text, IPointerClickHandler
         public int len;
     }
 
-    protected override void OnEnable()
+    readonly UIVertex[] m_TempVerts = new UIVertex[4];
+    protected override void OnPopulateMesh(VertexHelper toFill)
     {
-        base.OnEnable();
+        if (font == null)
+            return;
+
         if (EmojiIndex == null)
         {
             EmojiIndex = new Dictionary<string, EmojiInfo>();
 
+            //load emoji data, and you can overwrite this segment code base on your project.
             FileStream path = new FileStream("Assets/Resources/Textures/Chat/emoji/emoji.txt", FileMode.Open);
             using (StreamReader sr = new StreamReader(path))
             {
@@ -77,23 +54,11 @@ public class InlineText : Text, IPointerClickHandler
                 sr.Close();
             }
         }
-    }
 
-    readonly UIVertex[] m_TempVerts = new UIVertex[4];
-    protected override void OnPopulateMesh(VertexHelper toFill)
-    {
-        if (font == null)
-            return;
-        toFill.Clear();
-        m_OutputText = GetOutputText();
-        m_Text = m_OutputText;
-        base.OnPopulateMesh(toFill);
-
+        Dictionary<int, EmojiInfo> emojiDic = new Dictionary<int, EmojiInfo>();
         if (supportRichText)
         {
-            emojiDic.Clear();
-            MatchCollection matches = Regex.Matches(text, @"\[[a-z0-9A-Z]+\}");
-            emojiNum = matches.Count;
+            MatchCollection matches = Regex.Matches(text, @"^#[0-9]{3}");
             for (int i = 0; i < matches.Count; i++)
             {
                 EmojiInfo info;
@@ -120,8 +85,9 @@ public class InlineText : Text, IPointerClickHandler
         // get the text alignment anchor point for the text in local space
         Vector2 textAnchorPivot = GetTextAnchorPivot(alignment);
         Vector2 refPoint = Vector2.zero;
-        refPoint.x = (textAnchorPivot.x == 1 ? inputRect.xMax : inputRect.xMin);
-        refPoint.y = (textAnchorPivot.y == 0 ? inputRect.yMin : inputRect.yMax);
+        refPoint.x = Mathf.Lerp(inputRect.xMin, inputRect.xMax, textAnchorPivot.x);
+        refPoint.y = Mathf.Lerp(inputRect.yMin, inputRect.yMax, textAnchorPivot.y);
+
         // Determine fraction of pixel to offset text mesh.
         Vector2 roundingOffset = PixelAdjustPoint(refPoint) - refPoint;
 
@@ -195,6 +161,7 @@ public class InlineText : Text, IPointerClickHandler
                         else
                         {
                             dot = i + 4 * j;
+
                         }
                     }
                     if (dot > 0)
@@ -205,6 +172,7 @@ public class InlineText : Text, IPointerClickHandler
                             repairDistanceHalf = verts[nextChar].position.x - verts[dot].position.x;
                         }
                     }
+
                     //repair its distance
                     for (int j = 0; j < 4; j++)
                     {
@@ -243,83 +211,7 @@ public class InlineText : Text, IPointerClickHandler
                 }
             }
 
-            Twidth = this.preferredWidth;
-            Theight = this.preferredHeight;
-            //Debug.Log("111Twidth:" + Twidth + ":::::::::::::" + "Theight" + Theight);
         }
         m_DisableFontTextureRebuiltCallback = false;
-        UIVertex vert = new UIVertex();
-        foreach (var hrefInfo in m_HrefInfos)
-        {
-            hrefInfo.boxes.Clear();
-            if (hrefInfo.startIndex >= toFill.currentVertCount) continue;
-            toFill.PopulateUIVertex(ref vert, hrefInfo.startIndex);
-            var pos = vert.position;
-            var bounds = new Bounds(pos, Vector3.zero);
-            for (int i = hrefInfo.startIndex, m = hrefInfo.endIndex; i < m; i++)
-            {
-                if (i >= toFill.currentVertCount) break;
-                toFill.PopulateUIVertex(ref vert, i);
-                pos = vert.position;
-                if (pos.x < bounds.min.x)
-                {
-                    hrefInfo.boxes.Add(new Rect(bounds.min, bounds.size));
-                    bounds = new Bounds(pos, Vector3.zero);
-                } else
-                {
-                    bounds.Encapsulate(pos);
-                }
-            }
-            hrefInfo.boxes.Add(new Rect(bounds.min, bounds.size));
-        }
-        
-    }
-    
-    public virtual void OnPointerClick(PointerEventData eventData)
-    {
-        Vector2 lp;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out lp);
-        foreach(var hrefInfo in m_HrefInfos)
-        {
-            var boxes = hrefInfo.boxes;
-            for(var i = 0; i < boxes.Count; ++i)
-            {
-                if (boxes[i].Contains(lp))
-                {
-                    m_OnHrefClick.Invoke(hrefInfo.name);
-                    return;
-                }
-            }
-        }
-    }
-    /// <summary>
-    /// 格式化文本
-    /// </summary>
-    /// <returns></returns>
-    protected string GetOutputText()
-    {
-        s_TextBuilder.Length = 0;
-        m_HrefInfos.Clear();
-        var indexText = 0;
-        foreach(Match match in s_HrefRegex.Matches(text))
-        {
-            s_TextBuilder.Append(text.Substring(indexText, match.Index - indexText));
-            MatchCollection matches = Regex.Matches(s_TextBuilder.ToString(), @"\[[a-z0-9A-Z]+\}");
-            var _countNum = (1 + matches.Count * 3 * 3);
-            s_TextBuilder.Append("<color=yellow>");  // 超链接颜色
-            var group = match.Groups[1];
-            var hrefInfo = new HrefInfo
-            {
-                startIndex = (s_TextBuilder.Length) * 4-_countNum,
-                endIndex = (s_TextBuilder.Length + match.Groups[2].Length - 1) * 4 + 3-_countNum,
-                name = group.Value
-            };
-            m_HrefInfos.Add(hrefInfo);
-            s_TextBuilder.Append(match.Groups[2].Value);
-            s_TextBuilder.Append("</color>");
-            indexText = match.Index + match.Length;
-        }
-        s_TextBuilder.Append(text.Substring(indexText, text.Length - indexText));
-        return s_TextBuilder.ToString();
     }
 }

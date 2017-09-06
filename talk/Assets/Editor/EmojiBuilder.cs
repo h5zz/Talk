@@ -21,8 +21,8 @@ using System.IO;
 
 public class EmojiBuilder  {
 
-	private const string OutputPath = "Assets/Emoji/Output/";
-	private const string InputPath = "/Emoji/Input/";
+	private const string OutputPath = "Assets/Resources/Textures/Chat/Emoji/";
+	private const string InputPath = "Assets/Resources/Textures/Chat/Input/";
 
 	private static readonly Vector2[] AtlasSize = new Vector2[]{
 		new Vector2(32,32),
@@ -162,7 +162,7 @@ public class EmojiBuilder  {
 		using (StreamWriter sw = new StreamWriter (OutputPath + "emoji.txt",false)) {
 			sw.WriteLine ("Name\tKey\tFrames\tX\tY\tSize");
 			foreach (string key in emojiDic.Keys) {
-				sw.WriteLine ("{" + key + "}\t" + emojiDic[key].key + "\t" + sourceDic[key] + "\t" + emojiDic[key].x + "\t" + emojiDic[key].y + "\t" + emojiDic[key].size);
+				sw.WriteLine ("#" + key + "\t" + emojiDic[key].key + "\t" + sourceDic[key] + "\t" + emojiDic[key].x + "\t" + emojiDic[key].y + "\t" + emojiDic[key].size);
 			}
 			sw.Close ();
 		}
